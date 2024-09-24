@@ -21,22 +21,6 @@ export class Statement<T extends Record<string, unknown>> {
       throw new Error("No column defintions set. Call setColumnDefintions");
     }
 
-    return this.createTableStatement(this.tableName);
-  }
-
-  newInsertStatement({ ignored }: { ignored?: Ignored<T> }) {
-    if (!this.columnDefinitions) throw new Error("No column definitions set");
-
-    const columns = this.columnDefinitions.map((column) => `${column.name}`);
-
-    console.log(ignored);
-
-    const statement = `INSERT INTO ${this.tableName} (${columns.join(",\n  ")}) VALUES (${columns.map((v) => "?")})`;
-
-    return statement;
-  }
-
-  createTableStatement<T>(tableName: string): string {
     if (!this.columnDefinitions) throw new Error("No column definitions set");
 
     const columns = this.columnDefinitions.map((column) => {
@@ -47,20 +31,39 @@ export class Statement<T extends Record<string, unknown>> {
       return columnDef;
     });
 
-    const statement = `CREATE TABLE ${tableName} (
+    const statement = `CREATE TABLE ${this.tableName} (
         ${columns.join(",\n  ")}
     );`;
 
     console.info({
       module: "sqlite-gen",
-      statement,
       status: "Running statement",
+      statement,
     });
 
     return statement;
   }
 
-  insertTableStatement<T>() {}
+  newInsertStatement({ ignored }: { ignored?: Ignored<T> }) {
+    if (!this.columnDefinitions) throw new Error("No column definitions set");
+
+    const keys = Object.keys(ignored || {});
+
+    if (ignored)
+      console.log({
+        module: "sqlite-gen",
+        message: "ignoring selected fields",
+        ignored: keys,
+      });
+
+    const columns = this.columnDefinitions
+      .filter((column) => !keys.find((key) => key === column.name))
+      .map((column) => `${column.name}`);
+
+    const statement = `INSERT INTO ${this.tableName} (${columns.join(",\n  ")}) VALUES (${columns.map((v) => "?")})`;
+
+    return statement;
+  }
 
   createColumnDefinitions<T extends Record<string, unknown>>(
     type: T,

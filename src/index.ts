@@ -37,8 +37,8 @@ statement.setColumnDefinitions(userType);
 const sqlStatement = statement.newCreateStatement();
 const insertStatement = statement.newInsertStatement({
   ignored: {
-    createdAt: true,
     profilePicture: true,
+    createdAt: true,
   },
 });
 
@@ -46,7 +46,3 @@ console.log(insertStatement);
 
 const db = new Database(":memory:");
 db.exec(sqlStatement);
-
-// const safeExec=makeSafeFunction(db.exec);
-
-// safeExec(sqlStatement).match(console.log,console.error)
