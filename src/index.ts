@@ -33,6 +33,7 @@ const userType: User = {
 
 const statement = new Statement<User>("users");
 
+statement.setColumnDefinitions(userType);
 const sqlStatement = statement.newCreateStatement(userType);
 
 const db = new Database(":memory:");

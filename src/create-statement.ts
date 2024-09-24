@@ -4,15 +4,24 @@ import { inferSQLiteType, isSQLiteType } from "./utils";
 export class Statement<T extends Record<string, unknown>> {
   declare type: T;
   declare tableName: string;
+  columnDefinitions: ColumnDefinition[] | null = null;
 
   constructor(tableName: string) {
     this.tableName = tableName;
   }
 
-  newCreateStatement(userType: T) {
-    const columnDefinitions = this.createColumnDefinitions(userType);
+  setColumnDefinitions(userType: T) {
+    if (this.columnDefinitions === null) {
+      this.columnDefinitions = this.createColumnDefinitions(userType);
+    }
+  }
 
-    return this.createTableStatement(this.tableName, columnDefinitions);
+  newCreateStatement(userType: T) {
+    if (this.columnDefinitions === null) {
+      throw new Error("No column defintions set. Call setColumnDefintions");
+    }
+
+    return this.createTableStatement(this.tableName, this.columnDefinitions);
   }
 
   newInsertStatement() {}
