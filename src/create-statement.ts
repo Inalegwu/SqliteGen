@@ -16,21 +16,28 @@ export class Statement<T extends Record<string, unknown>> {
     }
   }
 
-  newCreateStatement(userType: T) {
+  newCreateStatement() {
     if (this.columnDefinitions === null) {
       throw new Error("No column defintions set. Call setColumnDefintions");
     }
 
-    return this.createTableStatement(this.tableName, this.columnDefinitions);
+    return this.createTableStatement(this.tableName);
   }
 
-  newInsertStatement() {}
+  newInsertStatement() {
+    if (!this.columnDefinitions) throw new Error("No column definitions set");
 
-  createTableStatement<T extends Record<string, unknown>>(
-    tableName: string,
-    columnDefinitions: ColumnDefinition[],
-  ): string {
-    const columns = columnDefinitions.map((column) => {
+    const columns = this.columnDefinitions.map((column) => `${column.name}`);
+
+    const statement = `INSERT INTO TABLE ${columns.join(",\n  ")} VALUES`;
+
+    return () => {};
+  }
+
+  createTableStatement<T>(tableName: string): string {
+    if (!this.columnDefinitions) throw new Error("No column definitions set");
+
+    const columns = this.columnDefinitions.map((column) => {
       let columnDef = `${column.name} ${column.type}`;
       if (column.primaryKey) columnDef += " PRIMARY KEY";
       if (column.notNull) columnDef += " NOT NULL";
@@ -50,6 +57,8 @@ export class Statement<T extends Record<string, unknown>> {
 
     return statement;
   }
+
+  insertTableStatement<T>() {}
 
   createColumnDefinitions<T extends Record<string, unknown>>(
     type: T,
