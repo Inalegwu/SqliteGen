@@ -31,14 +31,12 @@ const userType: User = {
   profilePicture: "BLOB",
 };
 
-const statement = new Statement<User>("user_table");
+const statement = new Statement<User>("users");
 
 const sqlStatement = statement.newCreateStatement(userType);
 
 const db = new Database(":memory:");
-const changes = db.exec(sqlStatement);
-
-console.log({ changes });
+db.exec(sqlStatement);
 
 // const safeExec=makeSafeFunction(db.exec);
 
