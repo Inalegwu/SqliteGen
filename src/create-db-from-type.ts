@@ -20,9 +20,13 @@ export function createTableStatement<T extends Record<string, any>>(
     return columnDef;
   });
 
-  return `CREATE TABLE ${tableName} (
+  const statement=`CREATE TABLE ${tableName} (
   ${columns.join(',\n  ')}
-);`;
+);`
+
+console.info({module:"sqlite-gen",statement,status:"Running statement"})
+
+  return statement;
 }
 
 // Type guard to check if a value is a valid SQLiteType
@@ -46,6 +50,7 @@ function inferSQLiteType<T>(key: keyof T): SQLiteType {
 
 // Helper function to create column definitions from a type
 export function createColumnDefinitions<T extends Record<string, any>>(type: T): ColumnDefinition[] {
+ console.info({module:"sqlite-gen",status:"generating column defintions",type})
   return Object.keys(type).filter(key => !key.endsWith('PrimaryKey') && !key.endsWith('NotNull') && !key.endsWith('Unique')).map(key => {
     const columnDef: ColumnDefinition = {
       name: key,

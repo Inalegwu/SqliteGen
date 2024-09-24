@@ -2,8 +2,8 @@
   "name": "sql-from-type",
   "module": "src/index.ts",
   "type": "module",
-  "scripts":{
-    "dev":"bun run src/index.ts"
+  "scripts": {
+    "dev": "bun run src/index.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.2",
@@ -14,5 +14,8 @@
   },
   "trustedDependencies": [
     "@biomejs/biome"
-  ]
+  ],
+  "dependencies": {
+    "@disgruntleddevs/make-safe-func": "npm:@jsr/disgruntleddevs__make-safe-func"
+  }
 }

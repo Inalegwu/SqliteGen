@@ -2,7 +2,7 @@ import { Database } from "bun:sqlite";
 import { createColumnDefinitions, createTableStatement } from "./create-db-from-type";
 
 // Example usage:
-interface User {
+type User={
   id: 'INTEGER';
   idPrimaryKey: true;
   username: 'TEXT';
@@ -14,7 +14,7 @@ interface User {
   isActive: 'INTEGER';
   createdAt: 'TEXT';
   profilePicture: 'BLOB';
-}
+} ;
 
 // Usage
 const userType: User = {
@@ -35,9 +35,13 @@ const userType: User = {
 
 const columnDefinitions = createColumnDefinitions(userType);
 const sqlStatement = createTableStatement('users', columnDefinitions);
-console.log(sqlStatement);
 
 
-const db=new Database("fake.db");
+const db=new Database(":memory:");
+const changes=db.exec(sqlStatement);
 
-db.exec(sqlStatement);
+console.log({changes});
+
+// const safeExec=makeSafeFunction(db.exec);
+
+// safeExec(sqlStatement).match(console.log,console.error)
