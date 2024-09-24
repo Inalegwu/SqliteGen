@@ -1,46 +1,44 @@
 import { Database } from "bun:sqlite";
-import { createColumnDefinitions, createTableStatement } from "./create-db-from-type";
+import { Statement } from "./create-statement";
 
 // Example usage:
-type User={
-  id: 'INTEGER';
+type User = {
+  id: "INTEGER";
   idPrimaryKey: true;
-  username: 'TEXT';
+  username: "TEXT";
   usernameNotNull: true;
   usernameUnique: true;
-  email: 'TEXT';
+  email: "TEXT";
   emailNotNull: true;
-  age: 'INTEGER';
-  isActive: 'INTEGER';
-  createdAt: 'TEXT';
-  profilePicture: 'BLOB';
-} ;
+  age: "INTEGER";
+  isActive: "INTEGER";
+  createdAt: "TEXT";
+  profilePicture: "BLOB";
+};
 
 // Usage
 const userType: User = {
-  id: 'INTEGER',
+  id: "INTEGER",
   idPrimaryKey: true,
-  username: 'TEXT',
+  username: "TEXT",
   usernameNotNull: true,
   usernameUnique: true,
-  email: 'TEXT',
+  email: "TEXT",
   emailNotNull: true,
-  age: 'INTEGER',
-  isActive: 'INTEGER',
-  createdAt: 'TEXT',
-  profilePicture: 'BLOB'
+  age: "INTEGER",
+  isActive: "INTEGER",
+  createdAt: "TEXT",
+  profilePicture: "BLOB",
 };
 
+const statement = new Statement<User>("user_table");
 
+const sqlStatement = statement.newCreateStatement(userType);
 
-const columnDefinitions = createColumnDefinitions(userType);
-const sqlStatement = createTableStatement('users', columnDefinitions);
+const db = new Database(":memory:");
+const changes = db.exec(sqlStatement);
 
-
-const db=new Database(":memory:");
-const changes=db.exec(sqlStatement);
-
-console.log({changes});
+console.log({ changes });
 
 // const safeExec=makeSafeFunction(db.exec);
 
