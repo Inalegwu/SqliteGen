@@ -34,7 +34,15 @@ const userType: User = {
 const statement = new Statement<User>("users");
 
 statement.setColumnDefinitions(userType);
-const sqlStatement = statement.newCreateStatement(userType);
+const sqlStatement = statement.newCreateStatement();
+const insertStatement = statement.newInsertStatement({
+  ignored: {
+    createdAt: true,
+    profilePicture: true,
+  },
+});
+
+console.log(insertStatement);
 
 const db = new Database(":memory:");
 db.exec(sqlStatement);

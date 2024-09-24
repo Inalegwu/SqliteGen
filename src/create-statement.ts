@@ -24,14 +24,16 @@ export class Statement<T extends Record<string, unknown>> {
     return this.createTableStatement(this.tableName);
   }
 
-  newInsertStatement() {
+  newInsertStatement({ ignored }: { ignored?: Ignored<T> }) {
     if (!this.columnDefinitions) throw new Error("No column definitions set");
 
     const columns = this.columnDefinitions.map((column) => `${column.name}`);
 
-    const statement = `INSERT INTO TABLE ${columns.join(",\n  ")} VALUES`;
+    console.log(ignored);
 
-    return () => {};
+    const statement = `INSERT INTO ${this.tableName} (${columns.join(",\n  ")}) VALUES (${columns.map((v) => "?")})`;
+
+    return statement;
   }
 
   createTableStatement<T>(tableName: string): string {
@@ -89,3 +91,7 @@ export class Statement<T extends Record<string, unknown>> {
       });
   }
 }
+
+type Ignored<T> = {
+  [K in keyof T]?: boolean;
+};
